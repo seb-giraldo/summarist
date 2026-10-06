@@ -566,5 +566,8 @@ button:disabled {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 479px) {
+  .auth__login--icon {
+    visibility: hidden;
+  }
 }
