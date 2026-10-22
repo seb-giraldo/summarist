@@ -25,10 +25,10 @@ export default function AuthModal() {
   return (
     <div>
       {authModal !== "closed" && (
-        <div className="auth__container" onClick={() => dispatch(closed())}>
+        <div className="auth__container" aria-label="auth-modal" onClick={() => dispatch(closed())}>
           <div className="auth__wrapper" onClick={(e) => e.stopPropagation()}>
             <div className="auth__content">
-              <IoClose className="close-auth__icon" onClick={() => dispatch(closed())} />
+              <IoClose aria-label="close" className="close-auth__icon" onClick={() => dispatch(closed())} />
               {(authModal === "login" && <LoginModal />) ||
                 (authModal === "signup" && <SignupModal />) ||
                 (authModal === "forgotPassword" && <ForgotPasswordModal />)}

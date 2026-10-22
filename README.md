@@ -44,6 +44,69 @@ npm run dev
 | `npm run build` | Type-check the app and create a production build in `dist/` |
 | `npm run preview` | Serve the production build locally |
 | `npm run lint` | Run ESLint |
+| `npm test` | Run tests in watch mode with Vitest |
+| `npm test -- --run` | Run tests once and exit |
+
+## Testing
+
+The test suite uses **Vitest** for the test runner and **React Testing Library** for component testing. Tests are written in `.test.jsx` files alongside their components.
+
+### Running tests
+
+```sh
+# Watch mode (re-runs tests on file changes)
+npm test
+
+# Single run
+npm test -- --run
+
+# Run a specific test file
+npm test -- src/components/Authmodal.test.jsx
+```
+
+### Test coverage
+
+| Component / Page | Tests | Notes |
+| --- | --- | --- |
+| **AuthModal** | Opens/closes on icon and overlay clicks; shows error on failed sign-in; guest login calls sign-in with correct credentials | Mocks `firebase/auth` |
+| **Searchbar** | Calls `getBooksByAuthorOrTitle` with search term and renders results | Mocks `axios` |
+| **LibraryTab** | Shows correct item counts for saved and finished books | Mocks Firebase and `axios`; sets user in Redux |
+| **ChoosePlanPage** | Renders premium plan cards; validates plan selection; calls checkout with chosen plan | Mocks `getCheckoutUrl` and `window.location` |
+
+### Mocking strategy
+
+- **External APIs:** `axios` is mocked globally in tests that need HTTP requests (Searchbar, LibraryTab).
+- **Firebase:** `firebase/auth` is mocked to control sign-in behavior. Firebase Firestore and Auth are mocked per-test where needed (LibraryTab, ChoosePlanPage).
+- **Redux:** The real store is used, but actions are dispatched before rendering to set initial state (for example, opening the AuthModal or setting a logged-in user).
+- **React Router:** Tests wrap components in `MemoryRouter` for routing support.
+- **jest-dom matchers:** `toBeInTheDocument()` and other matchers are available via `@testing-library/jest-dom`.
+
+### Writing new tests
+
+1. Create a `.test.jsx` file next to the component.
+2. Import `render` and `screen` from `@testing-library/react` and `@testing-library/jest-dom/vitest`.
+3. Arrange: Set up mocks, dispatch Redux actions, and render the component wrapped in `<Provider>` and `<MemoryRouter>`.
+4. Act: Interact with the component using `userEvent` (for example, `userEvent.type()`, `userEvent.click()`).
+5. Assert: Check the rendered output with `screen.getByText()`, `expect(...).toBeInTheDocument()`, and mock call assertions.
+
+### Example test
+
+```jsx
+import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom/vitest";
+import userEvent from "@testing-library/user-event";
+import axios from "axios";
+import MyComponent from "./MyComponent";
+
+vi.mock("axios");
+
+test("my component works", async () => {
+  axios.get.mockResolvedValueOnce({ data: "test" });
+  render(<MyComponent />);
+  await userEvent.type(screen.getByPlaceholderText(/search/i), "query");
+  expect(await screen.findByText("test")).toBeInTheDocument();
+});
+```
 
 ## App routes
 
