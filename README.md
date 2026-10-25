@@ -49,7 +49,7 @@ npm run dev
 
 ## Testing
 
-The test suite uses **Vitest** for the test runner and **React Testing Library** for component testing. Tests are written in `.test.jsx` files alongside their components.
+The unit and component tests use **Vitest** for the test runner and **React Testing Library** for component testing. Tests are written in `.test.jsx` files alongside their components. End-to-end tests use **Playwright** and live in the `e2e/` folder; see [End-to-end tests](#end-to-end-tests).
 
 ### Running tests
 
@@ -107,6 +107,54 @@ test("my component works", async () => {
   expect(await screen.findByText("test")).toBeInTheDocument();
 });
 ```
+
+## End-to-end tests
+
+The end-to-end suite uses **Playwright** (`@playwright/test`) to drive the app in real browsers: Chromium, Firefox, and WebKit. Specs live in `e2e/` and run against the Vite dev server at `http://localhost:5173`.
+
+### Running e2e tests
+
+```sh
+# One-time setup: download the browser binaries
+npx playwright install
+
+# Run all e2e tests in all three browsers
+npx playwright test
+
+# Run a single spec, or a single browser
+npx playwright test e2e/browsing-and-streaming.spec.js
+npx playwright test --project=firefox
+
+# Open the HTML report from the last run
+npx playwright show-report
+```
+
+The Playwright config starts `npm run dev` automatically if port 5173 is not already in use. The tests use the real Firebase project, so they need the same configuration as the app (see [Services and configuration](#services-and-configuration)).
+
+### E2E test coverage
+
+| Spec | Test | What it covers | Notes |
+| --- | --- | --- | --- |
+| **browsing-and-streaming** | Browse For You, open a book, and play its audio | Guest login, For You recommendations, book details, player page, audio starts and pauses | Uses the live book API; checks the `<audio>` element's `src` and `currentTime` |
+| **browsing-and-streaming** | A finished book is added to Finished in the Library tab | Plays a book to its end, then confirms it appears under **Finished** in the Library tab | Seeks near the end of the track so playback finishes quickly |
+
+### E2E results
+
+Last full run: **6 of 6 passed** (2 tests × Chromium, Firefox, WebKit).
+
+| Browser | browsing-and-streaming: play audio | browsing-and-streaming: Finished in Library |
+| --- | --- | --- |
+| Chromium | Passed | Passed |
+| Firefox | Passed | Passed |
+| WebKit | Passed | Passed |
+
+Results depend on the live book API and Firebase, so a failure may come from an external service rather than the app. The `test-results/` folder keeps artifacts (error context and traces) for failed runs.
+
+### E2E conventions
+
+- **Role-based locators:** Specs prefer `getByRole`, `getByText`, and `getByPlaceholder` over CSS selectors. Class selectors are used only where the UI has no accessible name (for example `.book--wrapper` and `.audio__controls--btn-play`).
+- **Real services, no mocks:** Unlike the component tests, e2e tests do not mock Firebase or the book API.
+- **Waiting on async results:** Use `expect(...).toBeVisible({ timeout })` and `expect.poll(...)` for data and audio state instead of fixed sleeps.
 
 ## App routes
 
