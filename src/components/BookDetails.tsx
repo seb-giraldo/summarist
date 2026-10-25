@@ -17,9 +17,9 @@ export default function BookDetails() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const { bookId } = useParams();
-  const [addedToLibrary, setAddedToLibrary] = useState(false);
   const [book, setBook] = useState({} as Book);
   const [savedBooks, setSavedBooks] = useState<string[]>([]);
+  const addedToLibrary = !!bookId && savedBooks.includes(bookId);
   const userId = useSelector((state: RootState) => state.auth.uid);
   const isUserPremium = useSelector((state: RootState) => state.auth.subscription) === "premium";
   const isUserLoading = useSelector((state: RootState) => state.auth.isLoading);
@@ -36,14 +36,6 @@ export default function BookDetails() {
   useEffect(() => {
     getSavedBooks(userId).then(setSavedBooks);
   }, [userId]);
-
-  // Check if book was added to library
-  useEffect(() => {
-    if (!bookId) {
-      return;
-    }
-    setAddedToLibrary(savedBooks.includes(bookId));
-  }, [savedBooks, bookId]);
 
   return (
     <SkeletonWrapper loading={loading}>
@@ -124,7 +116,7 @@ export default function BookDetails() {
                       ? () => navigate("/choose-plan")
                       : () => {
                           removeSavedBook(userId, bookId);
-                          setAddedToLibrary(false);
+                          setSavedBooks((prev) => prev.filter((id) => id !== bookId));
                         }
                   }
                 >
@@ -141,7 +133,7 @@ export default function BookDetails() {
                       ? () => navigate("/choose-plan")
                       : () => {
                           addSavedBook(userId, bookId);
-                          setAddedToLibrary(true);
+                          if (bookId) setSavedBooks((prev) => [...prev, bookId]);
                         }
                   }
                 >

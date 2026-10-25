@@ -52,7 +52,7 @@ export default function AudioPlayer() {
 
   const handleAudioEnded = (event: React.SyntheticEvent<HTMLAudioElement>) => {
     if (!bookId) return;
-    event.type === "ended" && addFinishedBook(userId, bookId);
+    if (event.type === "ended") addFinishedBook(userId, bookId);
   };
 
   // Update currentTime as audio plays

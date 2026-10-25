@@ -40,7 +40,7 @@ export const getPortalUrl = async (app: FirebaseApp): Promise<string> => {
   const auth = getAuth(app);
   const user = auth.currentUser;
 
-  let dataWithUrl: any;
+  let dataWithUrl: { url: string } | undefined;
   try {
     const functions = getFunctions(app, "us-central1");
     const functionRef = httpsCallable(functions, "ext-firestore-stripe-payments-createPortalLink");
@@ -57,7 +57,7 @@ export const getPortalUrl = async (app: FirebaseApp): Promise<string> => {
   }
 
   return new Promise<string>((resolve, reject) => {
-    if (dataWithUrl.url) {
+    if (dataWithUrl?.url) {
       resolve(dataWithUrl.url);
     } else {
       reject(new Error("No url returned"));

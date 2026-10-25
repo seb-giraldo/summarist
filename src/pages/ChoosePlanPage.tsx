@@ -9,7 +9,7 @@ import { useState } from "react";
 import { getCheckoutUrl } from "../stripe/stripePayments";
 import app from "../firebase";
 
-const PRICE_IDS: any = {
+const PRICE_IDS: Record<string, string> = {
   monthly: "price_1UEhGh4YAkniBq7693lhUdfp",
   yearly: "price_1UEbdr4YAkniBq76DfEGVaw1",
 };

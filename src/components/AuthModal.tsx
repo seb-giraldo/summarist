@@ -158,7 +158,7 @@ function SignupModal() {
     setDoc(doc(db, "users", uid), userData);
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 

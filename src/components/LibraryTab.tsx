@@ -16,7 +16,6 @@ export default function SavedTab() {
 
   useEffect(() => {
     if (!userId) return;
-    setLoading(true);
 
     const fetchBooksData = async (bookIds: string[]): Promise<Book[]> => {
       return await Promise.all(

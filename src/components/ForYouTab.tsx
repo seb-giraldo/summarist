@@ -19,7 +19,6 @@ export default function ForYouTab() {
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
 
     const fetchSelected = async () => {
       const { data } = await axios.get<Book[]>(

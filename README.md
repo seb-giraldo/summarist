@@ -1,5 +1,7 @@
 # Summarist
 
+[![CI](https://github.com/seb-giraldo/summarist/actions/workflows/ci.yml/badge.svg)](https://github.com/seb-giraldo/summarist/actions/workflows/ci.yml)
+
 Summarist is a React web app for discovering concise book summaries and listening to them as audio. Browse recommendations, search for books, save titles to a personal library, track finished books, and choose a subscription plan.
 
 ## Features
