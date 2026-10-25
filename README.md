@@ -158,6 +158,30 @@ Results depend on the live book API and Firebase, so a failure may come from an 
 - **Real services, no mocks:** Unlike the component tests, e2e tests do not mock Firebase or the book API.
 - **Waiting on async results:** Use `expect(...).toBeVisible({ timeout })` and `expect.poll(...)` for data and audio state instead of fixed sleeps.
 
+## Continuous integration
+
+GitHub Actions runs the checks automatically. The workflows live in `.github/workflows/`:
+
+| Workflow | File | Runs on | What it does |
+| --- | --- | --- | --- |
+| CI | `ci.yml` | Every push and pull request | Three parallel jobs: `lint` (`npm run lint`), `test` (`npx vitest run src`), and `build` (`npm run build`) |
+| Playwright Tests | `playwright.yml` | Pushes and pull requests to `main` or `master` | Installs browsers, runs `npx playwright test`, and uploads `playwright-report/` as an artifact (kept 30 days) |
+
+The status badge at the top of this README shows the result of the CI workflow. Each job uses Node 22.x with the npm cache, and installs dependencies with `npm ci`.
+
+The CI test job runs `vitest run src` rather than `npm test`. `npm test` runs in watch mode, which never exits in CI. Limiting the run to `src` also keeps Vitest from picking up the Playwright spec in `e2e/`.
+
+To reproduce a CI job locally, run the same commands in order:
+
+```bash
+npm ci
+npm run lint
+npx vitest run src
+npm run build
+```
+
+Playwright tests are kept in their own workflow because they need browser installs and take much longer than the other checks. See [End-to-end tests](#end-to-end-tests) for how to run them locally.
+
 ## App routes
 
 | Path | Description |
