@@ -158,6 +158,21 @@ Results depend on the live book API and Firebase, so a failure may come from an 
 - **Real services, no mocks:** Unlike the component tests, e2e tests do not mock Firebase or the book API.
 - **Waiting on async results:** Use `expect(...).toBeVisible({ timeout })` and `expect.poll(...)` for data and audio state instead of fixed sleeps.
 
+## Lighthouse results
+
+Before and after Lighthouse 13.5.0 navigation audits of the [live homepage](https://summaristbooks.vercel.app/), run on November 6, 2026 using mobile settings and simulated throttling:
+
+| Category | Before | After | Change |
+| --- | ---: | ---: | ---: |
+| Performance | 90 | 90 | — |
+| Accessibility | 90 | 100 | +10 |
+| Best Practices | 100 | 100 | — |
+| SEO | 91 | 100 | +9 |
+
+The changes improved text contrast, added a main landmark and a meta description, removed a duplicate font request, and optimized the navigation logo. In the later audit, first contentful paint improved from 2.9 to 2.8 seconds and the logo image optimization audit passed.
+
+These are individual snapshots; scores and timings can vary between runs. Both reports warned that IndexedDB data may affect loading performance, even though the audits were run in an incognito window. Automated accessibility checks do not replace manual testing.
+
 ## Continuous integration
 
 GitHub Actions runs the checks automatically. The workflows live in `.github/workflows/`:
